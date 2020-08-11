@@ -6,23 +6,21 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_location.*
-
 
 class LocationActivity : AppCompatActivity() {
 
-    private lateinit var locationViewModel: LocationViewModel
+    private val locationViewModel: LocationViewModel by viewModels()
     private var isGPSEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_location)
 
-        locationViewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)
         GpsUtils(this).turnGPSOn(object : GpsUtils.OnGpsListener {
 
             override fun gpsStatus(isGPSEnable: Boolean) {
@@ -52,11 +50,15 @@ class LocationActivity : AppCompatActivity() {
 
             isPermissionsGranted() -> startLocationUpdate()
 
-            shouldShowRequestPermissionRationale() -> latLong.text = getString(R.string.permission_request)
+            shouldShowRequestPermissionRationale() -> latLong.text =
+                getString(R.string.permission_request)
 
             else -> ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
                 LOCATION_REQUEST
             )
         }
@@ -64,7 +66,7 @@ class LocationActivity : AppCompatActivity() {
 
     private fun startLocationUpdate() {
         locationViewModel.getLocationData().observe(this, Observer {
-            latLong.text =  getString(R.string.latLong, it.longitude, it.latitude)
+            latLong.text = getString(R.string.latLong, it.longitude, it.latitude)
         })
     }
 
@@ -88,7 +90,11 @@ class LocationActivity : AppCompatActivity() {
         )
 
     @SuppressLint("MissingPermission")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             LOCATION_REQUEST -> {
