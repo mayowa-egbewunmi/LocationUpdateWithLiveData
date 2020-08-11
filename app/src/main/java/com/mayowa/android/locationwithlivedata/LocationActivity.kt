@@ -65,7 +65,7 @@ class LocationActivity : AppCompatActivity() {
     }
 
     private fun startLocationUpdate() {
-        locationViewModel.getLocationData().observe(this, Observer {
+        locationViewModel.locationData.observe(this, Observer {
             latLong.text = getString(R.string.latLong, it.longitude, it.latitude)
         })
     }
